@@ -67,7 +67,7 @@ var webpackConfig = {
       }
     ]
   },
-  plugin:[]
+  plugins:[]
 }
 
 module.exports = webpackConfig
