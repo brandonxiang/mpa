@@ -2,15 +2,14 @@ var path = require('path')
 var utils = require('./utils')
 var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
+var HtmlWebpackPlugin = require('html-webpack-plugin')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
-module.exports = {
-  entry: {
-    app: './src/main.js'
-  },
+var webpackConfig = {
+  entry: utils.getEntries('./src/module/**/*.js'),
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',
@@ -67,5 +66,8 @@ module.exports = {
         }
       }
     ]
-  }
+  },
+  plugin:[]
 }
+
+module.exports = webpackConfig
