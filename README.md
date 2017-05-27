@@ -1,4 +1,4 @@
-# vue-multi
+# vue-multi [中文文档](README_CN.md)
 
 It is a vue template for multipage project powered by [vue-cli](https://github.com/vuejs/vue-cli).
 
@@ -11,7 +11,7 @@ $ cd my-project
 $ npm install
 $ npm run dev
 ```
-呵呵
+
 ## Licence
 
 [MIT](LICENSE)
