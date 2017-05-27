@@ -8,8 +8,23 @@ function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
+var plugins = []
+var pages = utils.getEntries('./src/module/*/index.html')
+
+Object.keys(pages).forEach(function (page) {
+  var conf = {
+    filename: page+ '.html',
+    template: pages[page], //模板路径
+    inject: true,
+    excludeChunks: Object.keys(pages).filter(item => {
+      return (item != page)
+    })
+  }
+  plugins.push(new HtmlWebpackPlugin(conf))
+}, this);
+
 var webpackConfig = {
-  entry: utils.getEntries('./src/modules/**/*.js'),
+  entry: utils.getEntries('./src/module/*/main.js'),
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',
