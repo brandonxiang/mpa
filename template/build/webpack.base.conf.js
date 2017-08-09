@@ -9,7 +9,7 @@ function resolve (dir) {
 }
 
 var webpackConfig = {
-  entry: utils.getEntries('./src/modules/**/*.js'),
+  entry: utils.getEntries('./src/module/**/*.js'),
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',
