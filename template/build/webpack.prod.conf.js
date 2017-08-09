@@ -125,7 +125,7 @@ var pages = utils.getEntries('./src/modules/**/*.html')
 for(var page in pages) {
   // 配置生成的html文件，定义路径等
   var conf = {
-    filename: page + '.html',
+    filename: page + '/index.html',
     template: pages[page], //模板路径
     inject: true,
     // excludeChunks 允许跳过某些chunks, 而chunks告诉插件要引用entry里面的哪几个入口
@@ -134,7 +134,16 @@ for(var page in pages) {
     // filter：将数据过滤，然后返回符合要求的数据，Object.keys是获取JSON对象中的每个key
     excludeChunks: Object.keys(pages).filter(item => {
       return (item != page)
-    })
+    }),
+    minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: true
+        // more options:
+        // https://github.com/kangax/html-minifier#options-quick-reference
+      },
+      // necessary to consistently work with multiple chunks via CommonsChunkPlugin
+    chunksSortMode: 'dependency'
   }
   webpackConfig.plugins.push(new HtmlWebpackPlugin(conf)) 
 }
