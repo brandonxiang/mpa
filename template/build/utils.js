@@ -71,27 +71,49 @@ exports.styleLoaders = function (options) {
   return output
 }
 
+/**
+ * 各个模块下面的js/css/html文件不能使用相同的名字,页面中会引用所有模块的CSS和JS文件
+ * 如现有架构中每个模块的main.js，需要重命令为模块的名字,例：
+ * { 'module/classmates/classmates': './src/module/classmates/main.js',
+  'module/login/login': './src/module/login/main.js' }
+ * @param globPath
+ * @return {{}}
+ */
 exports.getEntries = function (globPath) {
-  var entries = {}
-  /**
-   * 读取src目录,并进行路径裁剪
-   */
-  glob.sync(globPath).forEach(function (entry) {
-    /**
-     * path.basename 提取出用 ‘/' 隔开的path的最后一部分，除第一个参数外其余是需要过滤的字符串
-     * path.extname 获取文件后缀
-     */
-    // var basename = path.basename(entry, path.extname(entry), 'router.js') // 过滤router.js
-    // ***************begin***************
-    // 当然， 你也可以加上模块名称, 即输出如下： { module/main: './src/module/index/main.js', module/test: './src/module/test/test.js' }
-    // 最终编译输出的文件也在module目录下， 访问路径需要时 localhost:8080/module/index.html
-    // slice 从已有的数组中返回选定的元素, -3 倒序选择，即选择最后三个
-    var tmp = entry.split('/').splice(-3)
-    var moduleName = tmp.slice(1, 2);
-    // ***************end***************
-    entries[moduleName] = entry
+  let entries = {},
+    basename,
+    tmp,
+    pathname;
+  glob.sync(globPath).forEach((entry) => {
+    basename = path.basename(entry, path.extname(entry));
+    tmp = entry.split('/').splice(-3);
+    pathname = tmp.slice(0, 2).join('/'); // 正确输出js路径
+    entries[pathname] = entry;
   });
-  // console.log(entries);
-  // 获取的主入口如下： { main: './src/module/index/main.js', test: './src/module/test/test.js' }
+
   return entries;
+};
+
+
+exports.setHtmlOutputPlugin = function (pages) {
+  let htmlPlugins = [];
+  for (let pathname in pages) {
+
+    let arr = ['manifest', 'vendor', pathname];
+      htmlPlugins.push({
+      filename: pathname + '.html',
+      template: pages[pathname],
+      inject: true,
+      minify: {
+        removeComments: true,         // 带html注释
+          collapseWhitespace: true,
+          minifyJS: true,
+          minifyCSS: true,
+      },
+      hash: false,
+      chunks: arr,
+      chunksSortMode: 'dependency'
+  })
+  }
+  return htmlPlugins;
 }

@@ -20,6 +20,11 @@ var webpackConfig = merge(baseWebpackConfig, {
       extract: true
     })
   },
+  externals:{
+    'vue':'Vue',
+    'vue-router': 'VueRouter',
+    'vuex': 'Vuex',
+  },
   devtool: config.build.productionSourceMap ? '#source-map' : false,
   output: {
     path: config.build.assetsRoot,
@@ -121,32 +126,9 @@ if (config.build.bundleAnalyzerReport) {
   webpackConfig.plugins.push(new BundleAnalyzerPlugin())
 }
 
-var pages = utils.getEntries('./src/modules/**/*.html')
-for(var page in pages) {
-  // 配置生成的html文件，定义路径等
-  var conf = {
-    filename: page + '/index.html',
-    template: pages[page], //模板路径
-    inject: true,
-    // excludeChunks 允许跳过某些chunks, 而chunks告诉插件要引用entry里面的哪几个入口
-    // 如何更好的理解这块呢？举个例子：比如本demo中包含两个模块（index和about），最好的当然是各个模块引入自己所需的js，
-    // 而不是每个页面都引入所有的js，你可以把下面这个excludeChunks去掉，然后npm run build，然后看编译出来的index.html和about.html就知道了
-    // filter：将数据过滤，然后返回符合要求的数据，Object.keys是获取JSON对象中的每个key
-    excludeChunks: Object.keys(pages).filter(item => {
-      return (item != page)
-    }),
-    minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        removeAttributeQuotes: true
-        // more options:
-        // https://github.com/kangax/html-minifier#options-quick-reference
-      },
-      // necessary to consistently work with multiple chunks via CommonsChunkPlugin
-    chunksSortMode: 'dependency'
-  }
-  webpackConfig.plugins.push(new HtmlWebpackPlugin(conf)) 
-}
+utils.setHtmlOutputPlugin(utils.getEntries('./src/module/**/prd.ejs')).forEach(function(item) {
+  webpackConfig.plugins.push(new HtmlWebpackPlugin(item));
+});
 
 
 module.exports = webpackConfig
