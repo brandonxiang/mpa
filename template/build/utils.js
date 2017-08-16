@@ -22,7 +22,7 @@ exports.cssLoaders = function (options) {
   }
 
   // generate loader string to be used with extract text plugin
-  function generateLoaders (loader, loaderOptions) {
+  function generateLoaders(loader, loaderOptions) {
     var loaders = [cssLoader]
     if (loader) {
       loaders.push({
@@ -95,25 +95,28 @@ exports.getEntries = function (globPath) {
 };
 
 
-exports.setHtmlOutputPlugin = function (pages) {
+exports.setHtmlOutputPlugin = function (pages, params) {
   let htmlPlugins = [];
   for (let pathname in pages) {
 
     let arr = ['manifest', 'vendor', pathname];
-      htmlPlugins.push({
+    const plugin = Object.assign({}, {
       filename: pathname + '.html',
       template: pages[pathname],
       inject: true,
       minify: {
         removeComments: true,         // 带html注释
-          collapseWhitespace: true,
-          minifyJS: true,
-          minifyCSS: true,
+        collapseWhitespace: true,
+        minifyJS: true,
+        minifyCSS: true,
       },
       hash: false,
       chunks: arr,
       chunksSortMode: 'dependency'
-  })
+    },
+      params
+    );
+    htmlPlugins.push(plugin);
   }
   return htmlPlugins;
 }

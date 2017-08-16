@@ -8,6 +8,7 @@ var CopyWebpackPlugin = require('copy-webpack-plugin')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+var bundleConfig = require("../" + config.build.dll + "/bundle-config.json")
 
 var env = {{#if_or unit e2e}}process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
@@ -19,11 +20,6 @@ var webpackConfig = merge(baseWebpackConfig, {
       sourceMap: config.build.productionSourceMap,
       extract: true
     })
-  },
-  externals:{
-    'vue':'Vue',
-    'vue-router': 'VueRouter',
-    'vuex': 'Vuex',
   },
   devtool: config.build.productionSourceMap ? '#source-map' : false,
   output: {
@@ -126,7 +122,13 @@ if (config.build.bundleAnalyzerReport) {
   webpackConfig.plugins.push(new BundleAnalyzerPlugin())
 }
 
-utils.setHtmlOutputPlugin(utils.getEntries('./src/module/**/prd.ejs')).forEach(function(item) {
+const params = {
+  libJsName: bundleConfig.libs.js ? '../' + config.build.dll + '/' + bundleConfig.libs.js : '', 
+  libCssName: bundleConfig.libs.css ? '../' + config.build.dll + '/' + bundleConfig.libs.css : '',
+  env: config.dev.env,
+}
+
+utils.setHtmlOutputPlugin(utils.getEntries('./src/module/**/index.ejs'), params).forEach(function(item) {
   webpackConfig.plugins.push(new HtmlWebpackPlugin(item));
 });
 

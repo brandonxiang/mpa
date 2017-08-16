@@ -5,6 +5,7 @@ var merge = require('webpack-merge')
 var baseWebpackConfig = require('./webpack.base.conf')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+var bundleConfig = require("../" + config.build.dll + "/bundle-config.json")
 
 // add hot-reload related code to entry chunks
 Object.keys(baseWebpackConfig.entry).forEach(function (name) {
@@ -34,7 +35,13 @@ var webpackConfig = merge(baseWebpackConfig, {
   ]
 })
 
-utils.setHtmlOutputPlugin(utils.getEntries('./src/module/**/index.ejs')).forEach(function(item) {
+const params = {
+  libJsName: bundleConfig.libs.js ? '../' + config.build.dll + '/' + bundleConfig.libs.js : '', 
+  libCssName: bundleConfig.libs.css ? '../' + config.build.dll + '/' + bundleConfig.libs.css : '',
+  env: config.dev.env,
+}
+
+utils.setHtmlOutputPlugin(utils.getEntries('./src/module/**/index.ejs'), params).forEach(function(item) {
   webpackConfig.plugins.push(new HtmlWebpackPlugin(item));
 });
 

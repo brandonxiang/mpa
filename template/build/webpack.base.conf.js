@@ -3,6 +3,7 @@ var utils = require('./utils')
 var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
+var webpack = require('webpack')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -107,7 +108,12 @@ var webpackConfig = {
       }
     ]
   },
-  plugins:[]
+  plugins:[
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: require('../' + config.build.dll + '/libs-mainfest.json') // 指向生成的manifest.json
+    }),
+  ]
 }
 
 module.exports = webpackConfig
