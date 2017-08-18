@@ -2,7 +2,6 @@ var path = require('path')
 var utils = require('./utils')
 var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
 var webpack = require('webpack')
 
 function resolve (dir) {
@@ -10,7 +9,7 @@ function resolve (dir) {
 }
 
 var webpackConfig = {
-  entry: utils.getEntries('./src/module/**/*.js'),
+  entry: utils.getEntries('./src/module', 'main.js'),
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',

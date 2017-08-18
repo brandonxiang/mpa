@@ -2,6 +2,7 @@ var path = require('path')
 var config = require('../config')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var glob = require('glob')
+var fs = require('fs')
 
 exports.assetsPath = function (_path) {
   var assetsSubDirectory = process.env.NODE_ENV === 'production'
@@ -71,52 +72,16 @@ exports.styleLoaders = function (options) {
   return output
 }
 
-/**
- * 各个模块下面的js/css/html文件不能使用相同的名字,页面中会引用所有模块的CSS和JS文件
- * 如现有架构中每个模块的main.js，需要重命令为模块的名字,例：
- * { 'module/classmates/classmates': './src/module/classmates/main.js',
-  'module/login/login': './src/module/login/main.js' }
- * @param globPath
- * @return {{}}
- */
-exports.getEntries = function (globPath) {
-  let entries = {},
-    basename,
-    tmp,
-    pathname;
-  glob.sync(globPath).forEach((entry) => {
-    basename = path.basename(entry, path.extname(entry));
-    tmp = entry.split('/').splice(-3);
-    pathname = tmp.slice(0, 2).join('/'); // 正确输出js路径
-    entries[pathname] = entry;
-  });
-
-  return entries;
+exports.getEntries = function (pageDir, entryPath) {
+  var entry = {};
+  var pageDirPath = path.join(__dirname, '..', pageDir);
+  fs.readdirSync(pageDirPath)
+      // 发现文件夹，就认为是页面模块
+      .filter(function (f) {
+          return fs.statSync(path.join(pageDirPath, f)).isDirectory();
+      })
+      .forEach(function (f) {
+          entry[path.basename(f)] = [pageDir, f, entryPath].join('/');
+      });
+  return entry;
 };
-
-
-exports.setHtmlOutputPlugin = function (pages, params) {
-  let htmlPlugins = [];
-  for (let pathname in pages) {
-
-    let arr = ['manifest', 'vendor', pathname];
-    const plugin = Object.assign({}, {
-      filename: pathname + '.html',
-      template: pages[pathname],
-      inject: true,
-      minify: {
-        removeComments: true,         // 带html注释
-        collapseWhitespace: true,
-        minifyJS: true,
-        minifyCSS: true,
-      },
-      hash: false,
-      chunks: arr,
-      chunksSortMode: 'dependency'
-    },
-      params
-    );
-    htmlPlugins.push(plugin);
-  }
-  return htmlPlugins;
-}
