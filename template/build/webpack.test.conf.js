@@ -5,6 +5,9 @@ var webpack = require('webpack')
 var merge = require('webpack-merge')
 var baseConfig = require('./webpack.base.conf')
 
+// remove DllReferencePlugin
+baseConfig.plugins.splice(0,1)
+
 var webpackConfig = merge(baseConfig, {
   // use inline sourcemap for karma-sourcemap-loader
   module: {
