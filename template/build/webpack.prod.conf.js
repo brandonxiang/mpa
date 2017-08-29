@@ -8,7 +8,7 @@ var CopyWebpackPlugin = require('copy-webpack-plugin')
 var MultipageWebpackPlugin = require('multipage-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
-var bundleConfig = require("../" + config.build.dll + "/bundle-config.json")
+var bundleConfig = require("../" + config.build.dllFolder + "/bundle-config.json")
 
 function resolve(dir) {
   return path.join(__dirname, '..', dir);
@@ -68,8 +68,8 @@ var webpackConfig = merge(baseWebpackConfig, {
           },
           // favicon: utils.assetsPath('img/icons/favicon.ico'),
           chunksSortMode: 'auto',
-          libJsName: bundleConfig.libs.js ? '../' + config.build.dll + '/' + bundleConfig.libs.js : '', 
-          libCssName: bundleConfig.libs.css ? '../' + config.build.dll + '/' + bundleConfig.libs.css : '',
+          libJsName: bundleConfig.libs.js ? '../' + config.build.dllFolder + '/' + bundleConfig.libs.js : '', 
+          libCssName: bundleConfig.libs.css ? '../' + config.build.dllFolder + '/' + bundleConfig.libs.css : '',
           env: config.dev.env,
       }
     }),

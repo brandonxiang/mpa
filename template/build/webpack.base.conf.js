@@ -110,7 +110,7 @@ var webpackConfig = {
   plugins:[
     new webpack.DllReferencePlugin({
       context: __dirname,
-      manifest: require('../' + config.build.dll + '/libs-mainfest.json') // 指向生成的manifest.json
+      manifest: require('../' + config.build.dllFolder + '/libs-mainfest.json') // 指向生成的manifest.json
     }),
   ]
 }

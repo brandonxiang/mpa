@@ -3,20 +3,19 @@ var webpack           = require('webpack');
 var config            = require('../config')
 var ExtractTextPlugin = require('extract-text-webpack-plugin'); // 提取css
 var AssetsPlugin = require('assets-webpack-plugin'); // 生成文件名，配合HtmlWebpackPlugin增加打包后dll的缓存
+
 module.exports        = {
   entry: {
-    libs: [
-      'vue/dist/vue.esm.js',
-    ]
+    libs: config.build.dllLibs,
   },
   output: {
-    path: path.resolve(__dirname, '../' + config.build.dll),
+    path: path.resolve(__dirname, '../' + config.build.dllFolder),
     filename: '[name].[chunkhash:7].js',
     library: '[name]_library'
   },
   plugins: [
     new webpack.DllPlugin({
-      path: path.resolve(__dirname, '../' + config.build.dll + '/[name]-mainfest.json'),
+      path: path.resolve(__dirname, '../' + config.build.dllFolder + '/[name]-mainfest.json'),
       name: '[name]_library',
       context: __dirname // 执行的上下文环境，对之后DllReferencePlugin有用
     }),
@@ -28,7 +27,7 @@ module.exports        = {
     }),
     new AssetsPlugin({
       filename: 'bundle-config.json',
-      path: './' + config.build.dll
+      path: './' + config.build.dllFolder
     }),
   ],
   module: {

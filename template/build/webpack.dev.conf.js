@@ -6,7 +6,7 @@ var merge = require('webpack-merge')
 var baseWebpackConfig = require('./webpack.base.conf')
 var MultipageWebpackPlugin = require('multipage-webpack-plugin');
 var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
-var bundleConfig = require("../" + config.build.dll + "/bundle-config.json")
+var bundleConfig = require("../" + config.build.dllFolder + "/bundle-config.json")
 
 function resolve(dir) {
   return path.join(__dirname, '..', dir);
@@ -40,8 +40,8 @@ module.exports = merge(baseWebpackConfig, {
           htmlTemplatePath: resolve('src/module/[name]/index.ejs'),
           htmlWebpackPluginOptions: {
               inject: true,
-              libJsName: bundleConfig.libs.js ? '../' + config.build.dll + '/' + bundleConfig.libs.js : '', 
-              libCssName: bundleConfig.libs.css ? '../' + config.build.dll + '/' + bundleConfig.libs.css : '',
+              libJsName: bundleConfig.libs.js ? '../' + config.build.dllFolder + '/' + bundleConfig.libs.js : '', 
+              libCssName: bundleConfig.libs.css ? '../' + config.build.dllFolder + '/' + bundleConfig.libs.css : '',
               env: config.dev.env,
           }
       }),
