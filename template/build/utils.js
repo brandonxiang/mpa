@@ -73,7 +73,16 @@ exports.styleLoaders = function (options) {
 }
 
 exports.getEntries = function (pageDir, entryPath) {
-  var whiteList = process.env.NODE_ENV === 'production' ? config.build.whiteList : undefined;
+  var whiteList = undefined;
+  if (process.env.NODE_ENV === 'production') {
+    var moduleArray = process.argv.slice(2);
+    if (moduleArray.length !== 0) {
+      var whiteList = moduleArray;
+    } else {
+      var whiteList = config.build.whiteList;
+    }
+  }
+  
   var entry = {};
   var pageDirPath = path.join(__dirname, '..', pageDir);
   fs.readdirSync(pageDirPath)
