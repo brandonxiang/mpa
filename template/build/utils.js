@@ -82,16 +82,17 @@ exports.getEntries = function (pageDir, entryPath) {
       var whiteList = config.build.whiteList;
     }
   }
-  
+
   var entry = {};
   var pageDirPath = path.join(__dirname, '..', pageDir);
   fs.readdirSync(pageDirPath)
     // 发现文件夹，就认为是页面模块
     .filter(function (f) {
-      if(whiteList){
-        return whiteList.indexOf(f) > -1 ;
+      var isDirectory = fs.statSync(path.join(pageDirPath, f)).isDirectory();
+      if (whiteList) {
+        return whiteList.indexOf(f) > -1 && isDirectory;
       }
-      return fs.statSync(path.join(pageDirPath, f)).isDirectory();
+      return isDirectory;
     })
     .forEach(function (f) {
       entry[path.basename(f)] = [pageDir, f, entryPath].join('/');
