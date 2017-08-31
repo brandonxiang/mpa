@@ -16,17 +16,51 @@ $ npm run build
 
 ## Features
 
-- Vue Multipage 
-- DLL JS Package
-- ejs for html
+- [multipage-webpack-plugin](https://github.com/mutualofomaha/multipage-webpack-plugin) 
+- DllReferencePlugin
+- [ejs-compiled-loader](https://github.com/bazilio91/ejs-compiled-loader)
+- `--nomap` command line for no productionSourceMap
+- whitelist for package-building
 
-> DLL JS Package is placed in `static` folder. If you want to pack more repos into DLL Package, 
+## Usage
 
-## Template EJS
+#### DLL Package build
 
-- [head](template/src/ejs/head.ejs) head in html
-- [loading](template/src/ejs/loading.ejs) loading plugins for global
+```bash
+npm run build:dll
+```
+> DLL Package is placed in `static` folder. If you want to pack more repos into DLL Package, 
+
+#### Template EJS
+
+Please place your own ejs template into `ejs` folder.
+
+- [head](template/src/ejs/head.ejs) header in html
+- [loading](template/src/ejs/loading.ejs) globally loading plugins  
 - [rem](template/src/ejs/rem.ejs) suitable in rem unit
+
+
+#### No Production SourceMap
+
+```bash
+npm run build --nomap
+```
+
+#### WhiteList for Package-building
+
+In the `config/index.js`, you can filter those packages which you want to build based on a whiteList.
+
+```javascript
+whiteList: ['Hello', 'eCommand', 'Pingan'],
+```
+
+Or
+
+you can filtr them using a commandline.
+
+```
+npm run build Hello eCommand Pingan
+```
 
 ## Licence
 
