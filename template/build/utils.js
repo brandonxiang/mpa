@@ -74,13 +74,13 @@ exports.styleLoaders = function (options) {
 
 exports.getEntries = function (pageDir, entryPath) {
   var whiteList = undefined;
+  var blackList = undefined;
   if (process.env.NODE_ENV === 'production') {
     var moduleArray = process.argv.slice(2);
     if (moduleArray.length !== 0) {
-      var whiteList = moduleArray;
-    } else {
-      var whiteList = config.build.whiteList;
-    }
+      whiteList = moduleArray;
+    } 
+    blackList = config.build.blackList;
   }
 
   var entry = {};
@@ -89,9 +89,8 @@ exports.getEntries = function (pageDir, entryPath) {
     // 发现文件夹，就认为是页面模块
     .filter(function (f) {
       var isDirectory = fs.statSync(path.join(pageDirPath, f)).isDirectory();
-      if (whiteList) {
-        return whiteList.indexOf(f) > -1 && isDirectory;
-      }
+      if (whiteList) return whiteList.indexOf(f) > -1 && isDirectory;
+      if (blackList) return blackList.indexOf(f) === -1 && isDirectory;
       return isDirectory;
     })
     .forEach(function (f) {
@@ -99,3 +98,4 @@ exports.getEntries = function (pageDir, entryPath) {
     });
   return entry;
 };
+

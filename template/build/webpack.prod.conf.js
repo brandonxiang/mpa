@@ -57,7 +57,7 @@ var webpackConfig = merge(baseWebpackConfig, {
     new MultipageWebpackPlugin({
       bootstrapFilename: utils.assetsPath('js/manifest.[chunkhash].js'),
       templateFilename: '[name].html',
-      templatePath: config.build.assetsRoot + '/module',
+      templatePath: config.build.assetsRoot + config.build.assetsHtml,
       htmlTemplatePath: resolve('src/module/[name]/index.ejs'),
       htmlWebpackPluginOptions: {
           inject: true,
