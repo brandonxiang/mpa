@@ -62,9 +62,13 @@ var webpackConfig = merge(baseWebpackConfig, {
       htmlWebpackPluginOptions: {
           inject: true,
           minify: {
-              removeComments: true,
-              collapseWhitespace: true,
-              removeAttributeQuotes: true
+            removeComments: true,
+            removeAttributeQuotes: true,
+            minifyJS: true,
+            collapseWhitespace: true,
+            removeOptionalTags: true,
+            removeScriptTypeAttributes: true,
+            processConditionalComments: true,
           },
           // favicon: utils.assetsPath('img/icons/favicon.ico'),
           chunksSortMode: 'auto',
