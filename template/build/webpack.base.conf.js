@@ -14,7 +14,7 @@ var webpackConfig = {
     path: config.build.assetsRoot,
     filename: '[name].js',
     publicPath: process.env.NODE_ENV === 'production'
-      ? config.build.assetsPublicPath
+      ? config.build.CDN_PATH + config.build.assetsPublicPath
       : config.dev.assetsPublicPath
   },
   resolve: {

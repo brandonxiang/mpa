@@ -6,6 +6,7 @@ module.exports = {
     env: require('./prod.env'),
     index: path.resolve(__dirname, '../dist/index.html'),
     assetsRoot: path.resolve(__dirname, '../dist'),
+    assetsHtml: process.env.npm_config_nomodule ? '' : '/module',
     assetsSubDirectory: 'static',
     assetsPublicPath: '',
     CDN_PATH: '../',
@@ -24,6 +25,7 @@ module.exports = {
     dllFolder: 'static/dll',
     dllLibs: [
       'vue/dist/vue.esm.js',
+      'babel-polyfill',
     ],
     blackList: '',
   },
