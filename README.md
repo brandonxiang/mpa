@@ -6,7 +6,7 @@ It is a vue template for multipage project powered by [vue-cli](https://github.c
 
 ``` bash
 $ npm install -g vue-cli
-$ vue init PaicFE/vue-multi my-project
+$ vue init -c http://git-ma.paic.com.cn/PaicFE/mpa.git my-project
 $ cd my-project
 $ npm install
 $ npm run build:dll
