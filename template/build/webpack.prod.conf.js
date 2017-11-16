@@ -71,7 +71,7 @@ var webpackConfig = merge(baseWebpackConfig, {
             minifyJS: true,
             minifyCSS: true,
             collapseWhitespace: true,
-            removeOptionalTags: true,
+            // removeOptionalTags: true,
             removeScriptTypeAttributes: true,
             processConditionalComments: true,
           },
