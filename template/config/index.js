@@ -3,8 +3,10 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
 
 const path = require('path')
+var dll = require('./dll')
 
 module.exports = {
+  dll: dll,
   dev: {
 
     // Paths
@@ -63,7 +65,7 @@ module.exports = {
      * Source Maps
      */
 
-    productionSourceMap: true,
+    productionSourceMap: process.env.npm_config_nomap ? false : true,
     // https://webpack.js.org/configuration/devtool/#production
     devtool: '#source-map',
 

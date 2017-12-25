@@ -8,6 +8,7 @@ const MultipageWebpackPlugin = require('multipage-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
 const path = require('path')
+// var bundleConfig = require("../" + config.dll.path + "/bundle-config.json")
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -58,6 +59,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       htmlWebpackPluginOptions: {
           inject: true,
           isProd: false,
+          // libJsName: bundleConfig.libs.js ? '../' + config.dll.path + '/' + bundleConfig.libs.js : '', 
+          // libCssName: bundleConfig.libs.css ? '../' + config.dll.path + '/' + bundleConfig.libs.css : '',
           env: config.dev.env,
       }
   }),
