@@ -4,7 +4,7 @@
   "license": "MIT",
   "description": "A full-featured Webpack setup with hot-reload, lint-on-save, unit testing & css extraction.",
   "scripts": {
-    "test": "rm -rf ./test && ./node_modules/.bin/vue init . test"
+    "test": "./node_modules/.bin/vue init . test"
   },
   "devDependencies": {
     "vue-cli": "^2.8.1"

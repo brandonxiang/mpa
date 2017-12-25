@@ -1,20 +1,32 @@
-var path = require('path')
-var utils = require('./utils')
-var config = require('../config')
-var vueLoaderConfig = require('./vue-loader.conf')
-var webpack = require('webpack')
+'use strict'
+const path = require('path')
+const utils = require('./utils')
+const config = require('../config')
+const vueLoaderConfig = require('./vue-loader.conf')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
-var webpackConfig = {
+{{#lint}}const createLintingRule = () => ({
+  test: /\.(js|vue)$/,
+  loader: 'eslint-loader',
+  enforce: 'pre',
+  include: [resolve('src'), resolve('test')],
+  options: {
+    formatter: require('eslint-friendly-formatter'),
+    emitWarning: !config.dev.showEslintErrorsInOverlay
+  }
+}){{/lint}}
+
+module.exports = {
+  context: path.resolve(__dirname, '../'),
   entry: utils.getEntries('./src/module', 'main.js'),
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',
     publicPath: process.env.NODE_ENV === 'production'
-      ? config.build.CDN_PATH + config.build.assetsPublicPath
+      ? config.build.assetsPublicPath
       : config.dev.assetsPublicPath
   },
   resolve: {
@@ -23,21 +35,13 @@ var webpackConfig = {
       {{#if_eq build "standalone"}}
       'vue$': 'vue/dist/vue.esm.js',
       {{/if_eq}}
-      '@': resolve('src')
+      '@': resolve('src'),
     }
   },
   module: {
     rules: [
       {{#lint}}
-      {
-        test: /\.(js|vue)$/,
-        loader: 'eslint-loader',
-        enforce: 'pre',
-        include: [resolve('src'), resolve('test')],
-        options: {
-          formatter: require('eslint-friendly-formatter')
-        }
-      },
+      ...(config.dev.useEslint ? [createLintingRule()] : []),
       {{/lint}}
       {
         test: /\.vue$/,
@@ -47,7 +51,7 @@ var webpackConfig = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        include: [resolve('src'), resolve('test')]
+        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
       },
       {
         test: /\.ejs$/,
@@ -57,45 +61,19 @@ var webpackConfig = {
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 10000,
-              name: utils.assetsPath('img/[name].[hash:7].[ext]')
-            }
-          },
-          {
-            loader: 'image-webpack-loader',
-            options: {
-              mozjpeg: {
-                quality: 65
-              },
-              pngquant: {
-                quality: "65-90",
-                speed: 4
-              },
-              svgo: {
-                plugins: [
-                  {
-                    removeViewBox: false
-                  },
-                  {
-                    removeEmptyAttrs: false
-                  }
-                ]
-              },
-              gifsicle: {
-                optimizationLevel: 7,
-                interlaced: false
-              },
-              optipng: {
-                optimizationLevel: 7,
-                interlaced: false
-              }
-            }
-          }
-        ]
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+          name: utils.assetsPath('img/[name].[hash:7].[ext]')
+        }
+      },
+      {
+        test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+          name: utils.assetsPath('media/[name].[hash:7].[ext]')
+        }
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
@@ -107,12 +85,16 @@ var webpackConfig = {
       }
     ]
   },
-  plugins:[
-    new webpack.DllReferencePlugin({
-      context: __dirname,
-      manifest: require('../' + config.build.dllFolder + '/libs-mainfest.json') // 指向生成的manifest.json
-    }),
-  ]
+  node: {
+    // prevent webpack from injecting useless setImmediate polyfill because Vue
+    // source contains it (although only uses it if it's native).
+    setImmediate: false,
+    // prevent webpack from injecting mocks to Node native modules
+    // that does not make sense for the client
+    dgram: 'empty',
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty',
+    child_process: 'empty'
+  }
 }
-
-module.exports = webpackConfig

@@ -1,51 +1,91 @@
-var path = require('path');
-var utils = require('./utils')
-var webpack = require('webpack')
-var config = require('../config')
-var merge = require('webpack-merge')
-var baseWebpackConfig = require('./webpack.base.conf')
-var MultipageWebpackPlugin = require('multipage-webpack-plugin');
-var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
-var bundleConfig = require("../" + config.build.dllFolder + "/bundle-config.json")
+'use strict'
+const utils = require('./utils')
+const webpack = require('webpack')
+const config = require('../config')
+const merge = require('webpack-merge')
+const baseWebpackConfig = require('./webpack.base.conf')
+const MultipageWebpackPlugin = require('multipage-webpack-plugin')
+const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+const portfinder = require('portfinder')
+const path = require('path')
 
-function resolve(dir) {
-  return path.join(__dirname, '..', dir);
+function resolve (dir) {
+  return path.join(__dirname, '..', dir)
 }
 
-// add hot-reload related code to entry chunks
-Object.keys(baseWebpackConfig.entry).forEach(function (name) {
-  baseWebpackConfig.entry[name] = ['./build/dev-client'].concat(baseWebpackConfig.entry[name])
+const HOST = process.env.HOST
+const PORT = process.env.PORT && Number(process.env.PORT)
+
+const devWebpackConfig = merge(baseWebpackConfig, {
+  module: {
+    rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
+  },
+  // cheap-module-eval-source-map is faster for development
+  devtool: config.dev.devtool,
+
+  // these devServer options should be customized in /config/index.js
+  devServer: {
+    clientLogLevel: 'warning',
+    historyApiFallback: true,
+    hot: true,
+    compress: true,
+    host: HOST || config.dev.host,
+    port: PORT || config.dev.port,
+    open: config.dev.autoOpenBrowser,
+    overlay: config.dev.errorOverlay
+      ? { warnings: false, errors: true }
+      : false,
+    publicPath: config.dev.assetsPublicPath,
+    proxy: config.dev.proxyTable,
+    quiet: true, // necessary for FriendlyErrorsPlugin
+    watchOptions: {
+      poll: config.dev.poll,
+    }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': require('../config/dev.env')
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
+    new webpack.NoEmitOnErrorsPlugin(),
+
+    new MultipageWebpackPlugin({
+      bootstrapFilename: 'manifest',
+      templateFilename: '[name].html',
+      templatePath: config.build.assetsHtml,
+      htmlTemplatePath: resolve('src/module/[name]/index.ejs'),
+      htmlWebpackPluginOptions: {
+          inject: true,
+          isProd: false,
+          env: config.dev.env,
+      }
+  }),
+  ]
 })
 
-module.exports = merge(baseWebpackConfig, {
-  module: {
-      rules: utils.styleLoaders({sourceMap: config.dev.cssSourceMap})
-  },
+module.exports = new Promise((resolve, reject) => {
+  portfinder.basePort = process.env.PORT || config.dev.port
+  portfinder.getPort((err, port) => {
+    if (err) {
+      reject(err)
+    } else {
+      // publish the new Port, necessary for e2e tests
+      process.env.PORT = port
+      // add port to devServer config
+      devWebpackConfig.devServer.port = port
 
-  // cheap-module-eval-source-map is faster for development
-  devtool: '#cheap-module-eval-source-map',
-  plugins: [
-      new webpack.DefinePlugin({
-          'process.env': config.dev.env
-      }),
+      // Add FriendlyErrorsPlugin
+      devWebpackConfig.plugins.push(new FriendlyErrorsPlugin({
+        compilationSuccessInfo: {
+          messages: [`Your application is running here: http://${devWebpackConfig.devServer.host}:${port}`],
+        },
+        onErrors: config.dev.notifyOnErrors
+        ? utils.createNotifierCallback()
+        : undefined
+      }))
 
-      // https://github.com/glenjamin/webpack-hot-middleware#installation--usage
-      new webpack.HotModuleReplacementPlugin(),
-      new webpack.NoEmitOnErrorsPlugin(),
-
-      new MultipageWebpackPlugin({
-          bootstrapFilename: 'manifest',
-          templateFilename: '[name].html',
-          templatePath: 'module',
-          htmlTemplatePath: resolve('src/module/[name]/index.ejs'),
-          htmlWebpackPluginOptions: {
-              inject: true,
-              libJsName: bundleConfig.libs.js ? '../' + config.build.dllFolder + '/' + bundleConfig.libs.js : '', 
-              libCssName: bundleConfig.libs.css ? '../' + config.build.dllFolder + '/' + bundleConfig.libs.css : '',
-              env: config.dev.env,
-          }
-      }),
-
-      new FriendlyErrorsPlugin()
-  ]
-});
+      resolve(devWebpackConfig)
+    }
+  })
+})
