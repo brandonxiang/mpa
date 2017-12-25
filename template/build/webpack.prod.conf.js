@@ -10,7 +10,10 @@ const MultipageWebpackPlugin = require('multipage-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-// var bundleConfig = require("../" + config.dll.path + "/bundle-config.json")
+
+const bundleConfig = require(`../${config.dll.path}/bundle-config.json`)
+const libJsName =  bundleConfig.libs.js ? `../${config.dll.path}/${bundleConfig.libs.js}` : ''
+const libCssName = bundleConfig.libs.css ? `../${config.dll.path}/${bundleConfig.libs.css}` : ''
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -82,8 +85,8 @@ const webpackConfig = merge(baseWebpackConfig, {
             removeScriptTypeAttributes: true,
             processConditionalComments: true,
           },
-          // libJsName: bundleConfig.libs.js ? '../' + config.dll.path + '/' + bundleConfig.libs.js : '', 
-          // libCssName: bundleConfig.libs.css ? '../' + config.dll.path + '/' + bundleConfig.libs.css : '',
+          libJsName, 
+          libCssName,
           // favicon: utils.assetsPath('img/icons/favicon.ico'),
           chunksSortMode: 'auto',
           isProd: process.env.npm_config_nomap? true: false,

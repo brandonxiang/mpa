@@ -6,7 +6,7 @@ var AssetsPlugin = require('assets-webpack-plugin'); // 生成文件名，配合
 
 module.exports        = {
   entry: {
-    libs: config.build.dllLibs,
+    libs: config.dll.libs,
   },
   output: {
     path: path.resolve(__dirname, '../' + config.build.dllFolder),
