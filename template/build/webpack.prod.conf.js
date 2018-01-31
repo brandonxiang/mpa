@@ -67,66 +67,41 @@ const webpackConfig = merge(baseWebpackConfig, {
         ? { safe: true, map: { inline: false } }
         : { safe: true }
     }),
-
-    new MultipageWebpackPlugin({
-      bootstrapFilename: utils.assetsPath('js/manifest.[chunkhash].js'),
-      templateFilename: '[name].html',
-      templatePath: config.build.assetsRoot + '/' + config.build.assetsHtml,
-      htmlTemplatePath: resolve('src/module/[name]/index.ejs'),
-      htmlWebpackPluginOptions: {
-          inject: true,
-          minify: {
-            removeComments: true,
-            removeAttributeQuotes: true,
-            minifyJS: true,
-            minifyCSS: true,
-            collapseWhitespace: true,
-            // removeOptionalTags: true,
-            removeScriptTypeAttributes: true,
-            processConditionalComments: true,
-          },
-          libJsName, 
-          libCssName,
-          // favicon: utils.assetsPath('img/icons/favicon.ico'),
-          chunksSortMode: 'auto',
-          isProd: process.env.npm_config_nomap? true: false,
-          env: config.dev.env,
-      }
-    }),
     
     // keep module.id stable when vendor modules does not change
     new webpack.HashedModuleIdsPlugin(),
     // enable scope hoisting
     new webpack.optimize.ModuleConcatenationPlugin(),
     // split vendor js into its own file
-    // new webpack.optimize.CommonsChunkPlugin({
-    //   name: 'vendor',
-    //   minChunks (module) {
-    //     // any required modules inside node_modules are extracted to vendor
-    //     return (
-    //       module.resource &&
-    //       /\.js$/.test(module.resource) &&
-    //       module.resource.indexOf(
-    //         path.join(__dirname, '../node_modules')
-    //       ) === 0
-    //     )
-    //   }
-    // }),
-    // // extract webpack runtime and module manifest to its own file in order to
-    // // prevent vendor hash from being updated whenever app bundle is updated
-    // new webpack.optimize.CommonsChunkPlugin({
-    //   name: 'manifest',
-    //   minChunks: Infinity
-    // }),
-    // // This instance extracts shared chunks from code splitted chunks and bundles them
-    // // in a separate chunk, similar to the vendor chunk
-    // // see: https://webpack.js.org/plugins/commons-chunk-plugin/#extra-async-commons-chunk
-    // new webpack.optimize.CommonsChunkPlugin({
-    //   name: 'app',
-    //   async: 'vendor-async',
-    //   children: true,
-    //   minChunks: 3
-    // }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      minChunks (module) {
+        // any required modules inside node_modules are extracted to vendor
+        return (
+          module.resource &&
+          /\.js$/.test(module.resource) &&
+          module.resource.indexOf(
+            path.join(__dirname, '../node_modules')
+          ) === 0
+        )
+      }
+      // minChunks: 3,
+    }),
+    // extract webpack runtime and module manifest to its own file in order to
+    // prevent vendor hash from being updated whenever app bundle is updated
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'manifest',
+      minChunks: Infinity
+    }),
+    // This instance extracts shared chunks from code splitted chunks and bundles them
+    // in a separate chunk, similar to the vendor chunk
+    // see: https://webpack.js.org/plugins/commons-chunk-plugin/#extra-async-commons-chunk
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'app',
+      async: 'vendor-async',
+      children: true,
+      minChunks: Infinity
+    }),
 
     // copy custom static assets
     new CopyWebpackPlugin([
@@ -162,4 +137,17 @@ if (config.build.bundleAnalyzerReport) {
   webpackConfig.plugins.push(new BundleAnalyzerPlugin())
 }
 
-module.exports = webpackConfig
+module.exports = utils.setMultipagePlugin(webpackConfig, './src/module/', 'index.ejs' , {
+  inject: true,
+  minify: {
+    removeComments: true,
+    collapseWhitespace: true,
+    removeAttributeQuotes: true,
+    minifyJS: true,
+    minifyCSS: true,
+    // more options:
+    // https://github.com/kangax/html-minifier#options-quick-reference
+  },
+  // necessary to consistently work with multiple chunks via CommonsChunkPlugin
+  chunksSortMode: 'dependency'
+});

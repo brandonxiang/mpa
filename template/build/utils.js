@@ -2,6 +2,7 @@
 const path = require('path')
 const config = require('../config')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const packageConfig = require('../package.json')
 const fs = require('fs')
 
@@ -102,7 +103,7 @@ exports.createNotifierCallback = () => {
 }
 
 
-exports.getEntries = function (pageDir, entryPath) {
+const getEntries = function (pageDir, entryPath) {
   var whiteList = undefined;
   var blackList = undefined;
   if (process.env.NODE_ENV === 'production') {
@@ -129,3 +130,28 @@ exports.getEntries = function (pageDir, entryPath) {
   return entry;
 };
 
+exports.getEntries = getEntries
+
+exports.setMultipagePlugin = function (webpackConfig, pageDir, entryPath, htmlOptions) {
+  
+    const bundleConfig = require(`../${config.dll.path}/bundle-config.json`)
+    const libJsName =  bundleConfig.libs.js ? `../${config.dll.path}/${bundleConfig.libs.js}` : ''
+    const libCssName = bundleConfig.libs.css ? `../${config.dll.path}/${bundleConfig.libs.css}` : ''
+  
+    const pages = getEntries(pageDir, entryPath)
+    if (!webpackConfig.plugins) {
+      webpackConfig.plugins = []
+    }
+    for (let pathname in pages) {
+      const opt = Object.assign({}, {
+        filename: 'module/' + pathname + '.html',
+        template: pages[pathname],
+        chunks: ['manifest', 'vendor', pathname],
+        libJsName,
+        libCssName,
+      }, htmlOptions);
+      webpackConfig.plugins.push(new HtmlWebpackPlugin(opt))
+    }
+    return webpackConfig
+  }
+  

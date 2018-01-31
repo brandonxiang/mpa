@@ -14,7 +14,7 @@ var spinner = ora({
   text: 'DLL Packages are being built......'
 })
 spinner.start()
-rm(path.resolve(__dirname, '../' + config.build.dll),  err => {
+rm(path.resolve(__dirname, '../' + config.dll.path),  err => {
   if (err) throw err
   webpack(dllConfig,function (err, stats) {
     spinner.stop()
