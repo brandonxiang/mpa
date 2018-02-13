@@ -132,26 +132,22 @@ const getEntries = function (pageDir, entryPath) {
 
 exports.getEntries = getEntries
 
-exports.setMultipagePlugin = function (webpackConfig, pageDir, entryPath, htmlOptions) {
-  
-    const bundleConfig = require(`../${config.dll.path}/bundle-config.json`)
-    const libJsName =  bundleConfig.libs.js ? `../${config.dll.path}/${bundleConfig.libs.js}` : ''
-    const libCssName = bundleConfig.libs.css ? `../${config.dll.path}/${bundleConfig.libs.css}` : ''
-  
-    const pages = getEntries(pageDir, entryPath)
-    if (!webpackConfig.plugins) {
-      webpackConfig.plugins = []
-    }
-    for (let pathname in pages) {
-      const opt = Object.assign({}, {
-        filename: 'module/' + pathname + '.html',
-        template: pages[pathname],
-        chunks: ['manifest', 'vendor', pathname],
-        libJsName,
-        libCssName,
-      }, htmlOptions);
-      webpackConfig.plugins.push(new HtmlWebpackPlugin(opt))
-    }
-    return webpackConfig
+exports.setMultipagePlugin = function (pageDir, entryPath, htmlOptions) {
+  const bundleConfig = require(`../${config.dll.path}/bundle-config.json`)
+  const libJsName =  bundleConfig.libs.js ? `../${config.dll.path}/${bundleConfig.libs.js}` : ''
+  const libCssName = bundleConfig.libs.css ? `../${config.dll.path}/${bundleConfig.libs.css}` : ''
+
+  const pages = getEntries(pageDir, entryPath)
+  let webpackConfig = { plugins: [] }
+  for (let pathname in pages) {
+    const opt = Object.assign({}, {
+      filename: 'module/' + pathname + '.html',
+      template: pages[pathname],
+      chunks: ['manifest', 'vendor', pathname],
+      libJsName,
+      libCssName,
+    }, htmlOptions);
+    webpackConfig.plugins.push(new HtmlWebpackPlugin(opt))
   }
-  
+  return webpackConfig
+}

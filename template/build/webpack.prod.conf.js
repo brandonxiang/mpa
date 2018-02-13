@@ -6,7 +6,6 @@ const config = require('../config')
 const merge = require('webpack-merge')
 const baseWebpackConfig = require('./webpack.base.conf')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const MultipageWebpackPlugin = require('multipage-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
@@ -23,7 +22,7 @@ const env = {{#if_or unit e2e}}process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
   : {{/if_or}}require('../config/prod.env')
 
-const webpackConfig = merge(baseWebpackConfig, {
+const webpackConfig = {
   module: {
     rules: utils.styleLoaders({
       sourceMap: config.build.productionSourceMap,
@@ -112,7 +111,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       }
     ])
   ]
-})
+}
 
 if (config.build.productionGzip) {
   const CompressionWebpackPlugin = require('compression-webpack-plugin')
@@ -137,7 +136,7 @@ if (config.build.bundleAnalyzerReport) {
   webpackConfig.plugins.push(new BundleAnalyzerPlugin())
 }
 
-module.exports = utils.setMultipagePlugin(webpackConfig, './src/module/', 'index.ejs' , {
+const multiWebpackConfig = utils.setMultipagePlugin('./src/module/', 'index.ejs' , {
   inject: true,
   minify: {
     removeComments: true,
@@ -151,3 +150,5 @@ module.exports = utils.setMultipagePlugin(webpackConfig, './src/module/', 'index
   // necessary to consistently work with multiple chunks via CommonsChunkPlugin
   chunksSortMode: 'dependency'
 });
+
+module.exports = merge(baseWebpackConfig, multiWebpackConfig, webpackConfig);

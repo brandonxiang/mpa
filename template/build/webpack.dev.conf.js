@@ -4,7 +4,6 @@ const webpack = require('webpack')
 const config = require('../config')
 const merge = require('webpack-merge')
 const baseWebpackConfig = require('./webpack.base.conf')
-const MultipageWebpackPlugin = require('multipage-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
 const path = require('path')
@@ -20,7 +19,7 @@ function resolve (dir) {
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
-const devWebpackConfig = merge(baseWebpackConfig, {
+const webpackConfig = {
   module: {
     rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
   },
@@ -53,22 +52,26 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
     new webpack.NoEmitOnErrorsPlugin(),
-
-    new MultipageWebpackPlugin({
-      bootstrapFilename: 'manifest',
-      templateFilename: '[name].html',
-      templatePath: config.build.assetsHtml,
-      htmlTemplatePath: resolve('src/module/[name]/index.ejs'),
-      htmlWebpackPluginOptions: {
-          inject: true,
-          isProd: false,
-          libJsName, 
-          libCssName,
-          env: config.dev.env,
-      }
-  }),
   ]
+}
+
+const multiWebpackConfig = utils.setMultipagePlugin('./src/module/', 'index.ejs' , {
+  inject: true,
+  minify: {
+    removeComments: true,
+    collapseWhitespace: true,
+    removeAttributeQuotes: true,
+    minifyJS: true,
+    minifyCSS: true,
+    // more options:
+    // https://github.com/kangax/html-minifier#options-quick-reference
+  },
+  // necessary to consistently work with multiple chunks via CommonsChunkPlugin
+  chunksSortMode: 'auto',
+  env: config.dev.env,
 })
+
+const devWebpackConfig = merge(baseWebpackConfig, multiWebpackConfig , webpackConfig);
 
 module.exports = new Promise((resolve, reject) => {
   portfinder.basePort = process.env.PORT || config.dev.port
