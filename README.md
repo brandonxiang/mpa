@@ -6,7 +6,7 @@ It is a vue template for multipage project powered by [vue-cli](https://github.c
 
 ``` bash
 $ npm install -g vue-cli
-$ vue init brandonxiang/mpa.git my-project
+$ vue init brandonxiang/mpa my-project
 $ cd my-project
 $ npm install
 $ npm run build:dll
