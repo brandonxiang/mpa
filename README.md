@@ -1,12 +1,17 @@
 # mpa
 
+**Deprecated, please read [vue-cli3.0](https://cli.vuejs.org/config/#pages)**
+
 It is a vue template for multipage project powered by [vue-cli](https://github.com/vuejs/vue-cli).
+
+> 请异步至vue-cli3.0的[多页面章节](https://cli.vuejs.org/zh/guide/html-and-static-assets.html#%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%A4%9A%E9%A1%B5%E5%BA%94%E7%94%A8)
+
 
 ## Usage
 
 ``` bash
 $ npm install -g vue-cli
-$ vue init brandonxiang/mpa.git my-project
+$ vue init brandonxiang/mpa my-project
 $ cd my-project
 $ npm install
 $ npm run build:dll
